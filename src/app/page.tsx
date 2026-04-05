@@ -1,75 +1,21 @@
 import { Suspense } from "react";
 import { SearchInput } from "@/components/SearchInput";
 import { CategoryFilter } from "@/components/CategoryFilter";
-import { ProductCard } from "@/components/ProductCard";
-import { Pagination } from "@/components/Pagination";
-import { EmptyState } from "@/components/EmptyState";
+import { ProductExplorer } from "@/components/ProductExplorer";
 import { ProductGridSkeleton } from "@/components/ProductSkeleton";
 import { getProducts, getCategories } from "@/lib/api";
 
-interface PageProps {
-  searchParams: Promise<{
-    search?: string;
-    category?: string;
-    skip?: string;
-    limit?: string;
-  }>;
-}
-
-async function ProductGridWithPagination({ 
-  search, 
-  category, 
-  skip, 
-  limit 
-}: { 
-  search?: string; 
-  category?: string; 
-  skip: number; 
-  limit: number; 
-}) {
-  const productsData = await getProducts({
-    search,
-    category,
-    skip,
-    limit,
-  });
-
-  if (productsData.products.length === 0) {
-    return <EmptyState />;
-  }
-
-  return (
-    <>
-      <div className="mb-8 flex items-center justify-between">
-        <h2 className="text-sm font-black uppercase tracking-widest text-zinc-400">
-          {productsData.total} results found
-        </h2>
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 mb-12">
-        {productsData.products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-
-      <Pagination 
-        total={productsData.total} 
-        limit={limit} 
-        skip={skip} 
-      />
-    </>
-  );
-}
-
-export default async function Home({ searchParams }: PageProps) {
-  const { search, category, skip, limit } = await searchParams;
-  
-  // Resolve pagination values
-  const skipNum = parseInt(skip || "0", 10);
-  const limitNum = parseInt(limit || "20", 10);
-
-  // Fetch categories (keep on main page for filter)
-  const categories = await getCategories();
+/**
+ * Static Home Page
+ * Fetching initial data for the default state (all categories, skip 0)
+ * searchParams are handled by the Client-side ProductExplorer component
+ */
+export default async function Home() {
+  // Fetch initial data (default view) and all categories
+  const [initialProducts, categories] = await Promise.all([
+    getProducts({ limit: 20, skip: 0 }),
+    getCategories(),
+  ]);
 
   return (
     <main className="flex min-h-screen flex-col bg-white dark:bg-black text-zinc-900 dark:text-zinc-100">
@@ -86,10 +32,14 @@ export default async function Home({ searchParams }: PageProps) {
           </div>
 
           <div className="flex flex-col gap-10">
-            <SearchInput className="max-w-2xl" />
+            <Suspense>
+              <SearchInput className="max-w-2xl" />
+            </Suspense>
             
             <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-              <CategoryFilter categories={categories} />
+              <Suspense>
+                <CategoryFilter categories={categories} />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -97,13 +47,8 @@ export default async function Home({ searchParams }: PageProps) {
 
       {/* Grid Section */}
       <section className="flex-1 py-16 px-4 max-w-7xl mx-auto w-full">
-        <Suspense key={`${search}-${category}-${skip}`} fallback={<ProductGridSkeleton />}>
-          <ProductGridWithPagination 
-            search={search} 
-            category={category} 
-            skip={skipNum} 
-            limit={limitNum} 
-          />
+        <Suspense fallback={<ProductGridSkeleton />}>
+          <ProductExplorer initialData={initialProducts} />
         </Suspense>
       </section>
       
