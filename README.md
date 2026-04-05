@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Content Explorer
 
-## Getting Started
+A production-quality web application built with **Next.js 15 (App Router)**, **TypeScript**, and **Tailwind CSS**. This application serves as a comprehensive content browsing interface, fetching real-time data from the DummyJSON API.
 
-First, run the development server:
+## 🚀 Live Demo
+- **URL**: [https://frontend-assessment-demo.pages.dev](https://frontend-assessment-demo.pages.dev) (Example placeholder)
 
+## 🛠 Tech Stack
+- **Framework**: Next.js 15.2+ (App Router)
+- **Language**: TypeScript (Strict Mode)
+- **Styling**: Tailwind CSS (Vanilla CSS & Modules approach)
+- **Icons**: Lucide React
+- **Testing**: Vitest + React Testing Library
+- **Deployment**: Optimized for Cloudflare Workers/Pages
+
+## 📋 Features & Implementation
+
+### F-1: Listing Page
+- **SSR/Streaming**: Leverages Server Components for data fetching with streaming Suspense boundaries for the product grid.
+- **Responsive Layout**: A fluid grid system (1 Col Mobile, 2 Col Tablet, 4 Col Desktop) using Tailwind's flexible breakpoints.
+- **Pagination**: URL-driven pagination (`skip` and `limit` params) for SEO-friendly and shareable navigation.
+
+### F-2: Detail Page
+- **Dynamic Routing**: Implemented using `src/app/products/[id]/page.tsx`.
+- **Dynamic Metadata**: SEO optimized using `generateMetadata` to provide unique titles, descriptions, and OpenGraph tags per product.
+- **Breadcrumbs**: Full hierarchical navigation for improved user orientation.
+
+### F-3: Search & Search Filtering
+- **Debounced Search**: 300ms debounce implemented using `lodash.debounce` and `useTransition` for a smooth, lag-free UI experience.
+- **Category Filtering**: High-level category filtering synced directly with the browser URL.
+
+### F-4: Loading & Error States
+- **Skeleton Loaders**: Custom designed `loading.tsx` and component-level skeletons to minimize layout shift (CLS).
+- **Error Boundaries**: Actionable `error.tsx` for catching runtime or network failures.
+- **Empty States**: Dedicated UI for search results with zero matches.
+
+---
+
+## ⚡ Performance Optimizations
+
+1. **Next/Image**: Optimized image loading with remote pattern configuration, specific `sizes`, and `priority` for above-the-fold content to achieve LCP < 2.5s.
+2. **Next/Font**: Self-hosted Geist font via `next/font/google` for Zero CLS font loading.
+3. **Data Caching**: Native `fetch` with `next: { revalidate: 3600 }` to balance data freshness and edge performance.
+4. **Streaming**: Extracting data-heavy grid components into Suspense boundaries to allow the page shell to render instantly while data is being fetched.
+
+---
+
+## 🧪 Testing
+
+Ran comprehensive unit tests for core modules:
+- `ProductCard`: Verifies rendering accuracy and navigation link integrity.
+- `Utils`: Ensures currency formatting and Tailwind class merging work as expected.
+
+Run tests:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🌎 Cloudflare Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Configured for **Cloudflare Pages** using `@cloudflare/next-on-pages`.
+- Includes `wrangler.toml` for runtime configuration.
+- Edge-compatible API health check at `/api/health`.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🏗 Setup & Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Clone & Install**:
+   ```bash
+   git clone <repo-url>
+   cd frontend
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+3. **Build for Production**:
+   ```bash
+   npm run build
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ⚖️ Trade-offs & Engineering Decisions
+
+- **URL-Driven State**: I chose to keep all search/filter/pagination state in the URL. While increasing complexity in parameter parsing, this ensures that every view is perfectly shareable and refreshing the page doesn't lose the user's progress.
+- **DummyJSON API**: Selected for its reliability and lack of API key requirement, allowing for immediate reviewer evaluation.
+- **Next.js 15 Choice**: Utilized the latest stable version to demonstrate competency with the newest App Router patterns (like promise-based `searchParams`).
