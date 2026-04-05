@@ -1,5 +1,5 @@
 name = "content-explorer"
-compatibility_date = "2026-11-18"
+compatibility_date = "2026-04-05"
 pages_build_output_dir = "out"
 
 [env.production]
