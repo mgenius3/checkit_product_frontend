@@ -3,12 +3,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, Truck, ShieldCheck, Undo2, ShoppingCart, ArrowLeft } from "lucide-react";
-import { getProductById } from "@/lib/api";
+import { getProductById, getProducts } from "@/lib/api";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { formatCurrency, cn } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+/**
+ * Required for static export (output: 'export') 
+ * Fetches IDs for pre-rendering
+ */
+export async function generateStaticParams() {
+  const { products } = await getProducts({ limit: 100 });
+  return products.map((product) => ({
+    id: product.id.toString(),
+  }));
 }
 
 /**
