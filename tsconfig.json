@@ -28,12 +28,7 @@
 
 
     },
-    "types": [
-      "vitest/globals",
-      "@testing-library/jest-dom",
-      "@testing-library/dom",
-      "@testing-library/react"
-    ]
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
 
 
 
